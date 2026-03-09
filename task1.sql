@@ -8,8 +8,8 @@ create table areas (
 -- Таблица специализаций 
 create table specializations (
     id serial primary key,
-    category varchar(255) not null, -- Подкатегория (по типу "Информационные технологии")
-    name varchar(255) not null -- Категория (у "Информационные технологии" будет, к примеру, "DevOps")
+    name varchar(255) not null,
+    parent_id integer references specializations(id) on delete cascade
 );
 
 
@@ -29,6 +29,53 @@ create table employers (
     description text
 );
 
+create type currency_enum as enum (
+    'RUB',
+    'EUR',
+    'USD',
+    'GBP'
+);
+
+create type experience_enum as enum (
+    'Без опыта',
+    '1–3 года',
+    '3–5 лет',
+    '5+ лет'
+);
+
+create type employment_type_enum as enum (
+    'Полная занятость',
+    'Частичная',
+    'Стажировка',
+    'Проект'
+);
+
+create type work_format_enum as enum (
+    'Удалённо',
+    'В офисе',
+    'Гибрид'
+);
+
+create type schedule_enum as enum (
+    '5/2',
+    '2/2',
+    '6/1',
+    '3/3',
+    'По выходным'
+);
+
+create type payment_frequency_enum as enum (
+    'Месяц',
+    'Неделя',
+    'День'
+);
+
+create type education_enum as enum (
+    'Высшее',
+    'Среднее',
+    'Неполное высшее'
+);
+
 
 -- Таблица вакансий
 create table vacancies (
@@ -36,17 +83,17 @@ create table vacancies (
     title varchar(255) not null,
     description text,
 
-    compensation_from numeric check(compensation_from >= 0),
-    compensation_to numeric check(compensation_to >= 0),
-    currency varchar(3),
+    compensation_from integer check(compensation_from >= 0),
+    compensation_to integer check(compensation_to >= 0),
+    currency currency_enum,
 
-    experience varchar(100),
-    employment_type varchar(100),
-    work_format varchar(100),
-    schedule varchar(100),
+    experience experience_enum,
+    employment_type employment_type_enum,
+    work_format work_format_enum,
+    schedule schedule_enum,
     working_hours integer check (working_hours > 0),
-    payment_frequency varchar(100),
-    education varchar(100),
+	payment_frequency payment_frequency_enum,
+    education education_enum,
 
     area_id integer not null references areas(id) on delete cascade,
     specialization_id integer not null references specializations(id) on delete cascade,
@@ -62,16 +109,16 @@ create table resumes (
 	title varchar(100),
     description text,
 
-    compensation_from numeric check(compensation_from >= 0),
-    compensation_to numeric check(compensation_to >= 0),
-    currency varchar(3),
+    compensation_from integer check(compensation_from >= 0),
+    compensation_to integer check(compensation_to >= 0),
+    currency currency_enum,
 
-    experience varchar(100),
-    employment_type varchar(100),
-    work_format varchar(100),
-    schedule varchar(100),
+    experience experience_enum,
+    employment_type employment_type_enum,
+    work_format work_format_enum,
+    schedule schedule_enum,
     working_hours integer check (working_hours > 0),
-    education varchar(100),
+    education education_enum,
 
     area_id integer not null references areas(id) on delete cascade,
     specialization_id integer not null references specializations(id) on delete cascade,
